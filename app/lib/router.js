@@ -1,13 +1,11 @@
 module.exports = Backbone.Router.extend({
     targetEl: "#mainDiv",
     routes:{
-        "":"home_view",
         "twoD/:f1/:f2":"twod_view",
         "mutsig_grid":"mutsig_grid_view",
         "scatterplot":"scatterplot_view",
         "seqpeek":"seqpeek_view",
         "v/*uri/:view_name":"viewsByUri",
-        "atlas": "atlasView",
         "s/*sessionId": "loadSessionById"
     },
 
@@ -36,33 +34,18 @@ module.exports = Backbone.Router.extend({
         var topnavbar = new TopNavBar();
         $("#navigation-container").append(topnavbar.render().el);
 
-//        var DataMenuView = require("../views/data_menu");
-//        var section_ids = _.without(_.keys(qed.Datamodel.attributes), "url");
-//        _.each(section_ids, function(section_id) {
-//            var dataMenuView = new DataMenuView({ "section": qed.Datamodel.get(section_id) });
-//            $(".data-menu").append(dataMenuView.render().el);
-//            dataMenuView.on("select-data-item", function(selected) {
-//                var modalConfig = _.extend({ sectionId: section_id }, selected);
-//                var DataMenuModal = require("../views/data_menu_modal");
-//                var dataMenuModal = new DataMenuModal(modalConfig);
-//                $("body").append(dataMenuModal.render().el);
-//            });
-//        });
-    },
-
-    atlasView: function() {
-        var model = new qed.Models.Default({ "data_uri": "svc/data/qed_atlas.json" });
-        _.defer(function() {
-            model.fetch({
-                success: function() {
-                    model.trigger("load");
-                }
+        var DataMenuView = require("../views/data_menu");
+        var section_ids = _.without(_.keys(qed.Datamodel.attributes), "url");
+        _.each(section_ids, function(section_id) {
+            var dataMenuView = new DataMenuView({ "section": qed.Datamodel.get(section_id) });
+            $(".data-menu").append(dataMenuView.render().el);
+            dataMenuView.on("select-data-item", function(selected) {
+                var modalConfig = _.extend({ sectionId: section_id }, selected);
+                var DataMenuModal = require("../views/data_menu_modal");
+                var dataMenuModal = new DataMenuModal(modalConfig);
+                $("body").append(dataMenuModal.render().el);
             });
         });
-
-        var AtlasView = qed.Views["Atlas"];
-        var view = new AtlasView({ "model": model });
-        this.$el.html(view.render().el);
     },
 
     loadSessionById: function(sessionId) {
@@ -79,7 +62,7 @@ module.exports = Backbone.Router.extend({
             }
         }
     },
-    
+
     mutsig_grid_view:function () {
         var MutSigGrid = require("../views/mutsig_grid_view");
         var mutsigGridView = new MutSigGrid();
@@ -108,13 +91,6 @@ module.exports = Backbone.Router.extend({
         var twoDView = new TwoD({collection:fl});
         fl.fetch();
         this.$el.html(twoDView.render().el);
-    },
-
-    home_view:function () {
-        this.navigate("#atlas", {trigger: true});
-//        var HomeView = require("../views/home_view");
-//        var homeView = new HomeView();
-//        this.$el.html(homeView.render().el);
     },
 
     viewsByUri: function(uri, view_name, options) {
