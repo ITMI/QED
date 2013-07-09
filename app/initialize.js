@@ -82,6 +82,16 @@ $(function () {
         }
     });
 
+    var QEDRouter = require('lib/router');
+    qed.Router = new QEDRouter();
+
+    var doStartup = function() {
+        qed.Router.initTopNavBar();
+
+        Backbone.history.start();
+        qed.Events.trigger("ready");
+    };
+
     var startupUI = function() {
         $.ajax({
             "url": "svc/storage/sessions",
@@ -89,14 +99,9 @@ $(function () {
             "success": function(json) {
                 var SessionsCollection = require("models/sessions");
                 qed.Sessions.All = new SessionsCollection(json.items);
-
-                var QEDRouter = require('lib/router');
-                qed.Router = new QEDRouter();
-                qed.Router.initTopNavBar();
-
-                Backbone.history.start();
-                qed.Events.trigger("ready");
-            }
+                doStartup();
+            },
+            "error": doStartup
         });
     };
 
